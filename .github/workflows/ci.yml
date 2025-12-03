@@ -1,0 +1,80 @@
+name: Build, Push and Deploy
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: |
+            dinhoangphihung17/bingo-game:latest
+            dinhoangphihung17/bingo-game:${{ github.sha }}
+
+#   deploy:
+#     needs: build-and-push
+#     runs-on: ubuntu-latest
+# if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+#     steps:
+#       - name: Deploy to DigitalOcean Droplet
+#         uses: appleboy/ssh-action@v1.0.3
+#         with:
+#           host: ${{ secrets.DROPLET_HOST }}
+#           username: ${{ secrets.DROPLET_USER }}
+#           key: ${{ secrets.DROPLET_SSH_KEY }}
+#           port: ${{ secrets.DROPLET_PORT || 22 }}
+#           script: |
+#             echo "Starting deploy"
+
+#             cd /opt/web/social-media/backend
+
+#             echo "Stopping current services..."
+#             docker compose -f docker-compose.yml down
+
+#             echo "Cleaning up containers..."
+#             docker container prune -f
+
+#             echo "Removing old image..."
+#             docker rmi dinhoangphihung17/socialmedia:latest || true
+
+#             echo "Pulling latest Docker image..."
+#             docker pull dinhoangphihung17/socialmedia:latest
+
+#             echo "Starting services..."
+#             docker compose -f docker-compose.yml up -d --force-recreate
+
+#             echo "Waiting for services..."
+#             sleep 30
+
+#             echo "Current containers:"
+#             docker compose -f docker-compose.yml ps
+
+#             echo "Deployment completed!"
+
+#       - name: Notify deployment status
+#         if: always()
+#         run: |
+#           if [ "${{ job.status }}" == "success" ]; then
+#             echo "✅ Deployment successful!"
+#           else
+#             echo "❌ Deployment failed!"
+#           fi
