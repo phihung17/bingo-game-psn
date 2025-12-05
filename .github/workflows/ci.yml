@@ -25,56 +25,60 @@ jobs:
         with:
           context: .
           push: true
+          build-args: |
+            NEXT_PUBLIC_SOCKET_URL=${{ secrets.NEXT_PUBLIC_SOCKET_URL }}
+            PORT=${{ secrets.PORT }}
+            HOSTNAME=${{ secrets.HOSTNAME }}
           tags: |
             dinhoangphihung17/bingo-game:latest
             dinhoangphihung17/bingo-game:${{ github.sha }}
 
-#   deploy:
-#     needs: build-and-push
-#     runs-on: ubuntu-latest
-# if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push' || github.ref == 'refs/heads/develop' && github.event_name == 'push'
 
-#     steps:
-#       - name: Deploy to DigitalOcean Droplet
-#         uses: appleboy/ssh-action@v1.0.3
-#         with:
-#           host: ${{ secrets.DROPLET_HOST }}
-#           username: ${{ secrets.DROPLET_USER }}
-#           key: ${{ secrets.DROPLET_SSH_KEY }}
-#           port: ${{ secrets.DROPLET_PORT || 22 }}
-#           script: |
-#             echo "Starting deploy"
+    steps:
+      - name: Deploy to DigitalOcean Droplet
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.DROPLET_HOST }}
+          username: ${{ secrets.DROPLET_USER }}
+          key: ${{ secrets.DROPLET_SSH_KEY }}
+          port: ${{ secrets.DROPLET_PORT || 22 }}
+          script: |
+            echo "Starting deploy"
 
-#             cd /opt/web/social-media/backend
+            cd /opt/web/bingo-game/
 
-#             echo "Stopping current services..."
-#             docker compose -f docker-compose.yml down
+            echo "Stopping current services..."
+            docker compose -f docker-compose.yml down
 
-#             echo "Cleaning up containers..."
-#             docker container prune -f
+            echo "Cleaning up containers..."
+            docker container prune -f
 
-#             echo "Removing old image..."
-#             docker rmi dinhoangphihung17/socialmedia:latest || true
+            echo "Removing old image..."
+            docker rmi dinhoangphihung17/bingo-game:latest || true
 
-#             echo "Pulling latest Docker image..."
-#             docker pull dinhoangphihung17/socialmedia:latest
+            echo "Pulling latest Docker image..."
+            docker pull dinhoangphihung17/bingo-game:latest
 
-#             echo "Starting services..."
-#             docker compose -f docker-compose.yml up -d --force-recreate
+            echo "Starting services..."
+            docker compose -f docker-compose.yml up -d --force-recreate
 
-#             echo "Waiting for services..."
-#             sleep 30
+            echo "Waiting for services..."
+            sleep 30
 
-#             echo "Current containers:"
-#             docker compose -f docker-compose.yml ps
+            echo "Current containers:"
+            docker compose -f docker-compose.yml ps
 
-#             echo "Deployment completed!"
+            echo "Deployment completed!"
 
-#       - name: Notify deployment status
-#         if: always()
-#         run: |
-#           if [ "${{ job.status }}" == "success" ]; then
-#             echo "✅ Deployment successful!"
-#           else
-#             echo "❌ Deployment failed!"
-#           fi
+      - name: Notify deployment status
+        if: always()
+        run: |
+          if [ "${{ job.status }}" == "success" ]; then
+            echo "✅ Deployment successful!"
+          else
+            echo "❌ Deployment failed!"
+          fi

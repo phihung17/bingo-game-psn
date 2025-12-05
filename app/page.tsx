@@ -36,7 +36,8 @@ export default function BingoGame() {
   // Initialize socket connection
   useEffect(() => {
     const socketUrl =
-      process.env.NEXT_PUBLIC_SOCKET_URL || "http://192.168.3.25:3000";
+      (typeof window !== "undefined" && (window as any).__SOCKET_URL__) ||
+      process.env.NEXT_PUBLIC_SOCKET_URL;
 
     const newSocket = io(socketUrl, {
       transports: ["websocket", "polling"],
@@ -84,7 +85,7 @@ export default function BingoGame() {
     return () => {
       newSocket.close();
     };
-  }, []);
+  }, []); // No dependencies needed
 
   // Join or create room
   const handleJoinRoom = () => {
@@ -132,7 +133,7 @@ export default function BingoGame() {
     }
 
     // Check range
-    for (let num of numbers) {
+    for (const num of numbers) {
       if (num < 1 || num > 25) {
         showError("Tất cả số phải từ 1-25!");
         return;

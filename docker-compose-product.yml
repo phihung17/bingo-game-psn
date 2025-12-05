@@ -1,0 +1,30 @@
+services:
+  bingo-game:
+    image: dinhoangphihung17/bingo-game:latest
+    ports:
+      - "5000:5000"
+    env_file:
+      - .env
+    environment:
+      - SOCKET_URL=http://206.189.89.131:5000
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "--no-verbose",
+          "--tries=1",
+          "--spider",
+          "http://206.189.89.131:5000/api/health",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - bingo-network
+
+networks:
+  bingo-network:
+    driver: bridge
