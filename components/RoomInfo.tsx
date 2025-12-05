@@ -12,19 +12,19 @@ export default function RoomInfo({
   gameState,
 }: RoomInfoProps) {
   return (
-    <div className="text-center mb-6">
-      <div className="bg-white rounded-lg p-4 shadow-md inline-block">
-        <p className="font-semibold">
-          Mã phòng:{" "}
-          <span className="text-blue-600 font-mono text-lg">{roomId}</span>
-        </p>
-        <p className="text-sm text-gray-600 mt-1">
-          Bạn là:{" "}
-          <span className="font-semibold">Người chơi {playerNumber}</span>
-        </p>
-        <p className="text-sm text-gray-600">
-          Người chơi trong phòng: {gameState.players?.length || 0}/2
-        </p>
+    <div className="mx-auto max-w-lg mb-6">
+      <div className="flex items-center justify-center mb-3">
+        <h3 className="text-lg font-bold">Phòng {roomId}</h3>
+      </div>
+      <div className="grid grid-cols-2 gap-4 text-sm">
+        <div className="text-center">
+          <p className="font-semibold">Vai trò</p>
+          <p className="">Player {playerNumber}</p>
+        </div>
+        <div className="text-center">
+          <p className="font-semibold">Trạng thái</p>
+          <p className="">{gameState.players?.length || 0}/2</p>
+        </div>
       </div>
     </div>
   );

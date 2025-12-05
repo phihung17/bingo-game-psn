@@ -24,7 +24,7 @@ export default function BingoBoard({
 
   return (
     <div className="flex flex-col items-center">
-      <div className="flex items-center gap-2 mb-2">
+      <div className="flex flex-col md:flex-row items-center gap-2 mb-2">
         <h2
           className={`text-xl font-bold ${
             isCurrentPlayer ? "text-green-600" : "text-blue-600"

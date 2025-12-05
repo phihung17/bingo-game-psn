@@ -1,4 +1,4 @@
-import { BingoCell } from '../types/game';
+import { BingoCell } from "../types/game";
 
 interface BoardCreationProps {
   playerNumber: number | null;
@@ -20,7 +20,7 @@ export default function BoardCreation({
   isSubmittingBoard,
   onSubmitBoard,
   onAutoFillBoard,
-  gameState
+  gameState,
 }: BoardCreationProps) {
   const handleBoardInputChange = (index: number, value: string) => {
     const newBoardInput = [...boardInput];
@@ -30,10 +30,12 @@ export default function BoardCreation({
 
   return (
     <div className="mb-8">
-      <div className="text-center mb-6">
-        <div className="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded">
-          <p className="font-semibold">Tạo bảng Bingo của bạn!</p>
-          <p className="text-sm mt-1">
+      <div className="text-center mb-8">
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-500 text-blue-800 px-6 py-4 rounded-r-xl shadow-lg max-w-2xl mx-auto">
+          <div className="flex items-center justify-center mb-2">
+            <h2 className="text-xl font-bold">Tạo bảng Bingo của bạn!</h2>
+          </div>
+          <p className="text-blue-700">
             Nhập 25 số khác nhau từ 1-25 vào các ô bên dưới
           </p>
         </div>
@@ -45,25 +47,25 @@ export default function BoardCreation({
           <h3 className="text-lg font-semibold mb-4 text-center">
             Bảng của bạn (Người chơi {playerNumber})
           </h3>
-          
-          <div className="grid grid-cols-5 gap-2 mb-4">
-            {boardInput.map((value, index) => (
-              <input
-                key={index}
-                type="number"
-                min="1"
-                max="25"
-                value={value}
-                onChange={(e) =>
-                  handleBoardInputChange(index, e.target.value)
-                }
-                className="w-12 h-12 text-center border border-gray-300 rounded font-bold text-sm focus:border-blue-500 focus:outline-none"
-                placeholder={(index + 1).toString()}
-                disabled={isSubmittingBoard}
-              />
-            ))}
+          <div className="flex justify-center">
+            <div className="grid grid-cols-5 gap-2 mb-4">
+              {boardInput.map((value, index) => (
+                <input
+                  key={index}
+                  type="number"
+                  min="1"
+                  max="25"
+                  value={value}
+                  onChange={(e) =>
+                    handleBoardInputChange(index, e.target.value)
+                  }
+                  className="w-12 h-12 text-center text-sm border border-gray-300 rounded font-bold focus:border-blue-500 focus:outline-none"
+                  placeholder={(index + 1).toString()}
+                  disabled={isSubmittingBoard}
+                />
+              ))}
+            </div>
           </div>
-
           {/* Action Buttons */}
           <div className="flex justify-center gap-4">
             <button
@@ -85,8 +87,8 @@ export default function BoardCreation({
           {/* Instructions */}
           <div className="mt-4 text-sm text-gray-600 text-center">
             <p>
-              💡 Mẹo: Sử dụng "Tự động điền" để tạo bảng ngẫu nhiên, sau
-              đó chỉnh sửa theo ý muốn
+              💡 Mẹo: Sử dụng "Tự động điền" để tạo bảng ngẫu nhiên, sau đó
+              chỉnh sửa theo ý muốn
             </p>
           </div>
         </div>
@@ -95,11 +97,24 @@ export default function BoardCreation({
         {((playerNumber === 1 && gameState.player1Board.length > 0) ||
           (playerNumber === 2 && gameState.player2Board.length > 0)) && (
           <div className="text-center">
-            <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
-              <p className="font-semibold">
-                ✅ Bảng của bạn đã được xác nhận!
-              </p>
-              <p className="text-sm mt-1">
+            <div className="bg-gradient-to-r from-green-50 to-emerald-50 border-l-4 border-green-500 text-green-800 px-6 py-4 rounded-r-xl shadow-lg max-w-2xl mx-auto">
+              <div className="flex items-center justify-center mb-2">
+                <svg
+                  className="w-6 h-6 text-green-500 mr-3"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+                <h2 className="text-xl font-bold">Bảng đã được xác nhận!</h2>
+              </div>
+              <p className="text-green-700">
                 Đang chờ đối thủ hoàn thành bảng...
               </p>
             </div>
