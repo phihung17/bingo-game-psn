@@ -16,11 +16,5 @@ export default {
       },
     },
   },
-  safelist: [
-    "bg-light-blue",
-    "border-navy-blue",
-    "text-navy-blue",
-    "text-light-blue",
-  ],
   plugins: [],
 } satisfies Config;

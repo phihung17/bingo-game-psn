@@ -7,18 +7,14 @@ RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
 # Install dependencies based on the preferred package manager
-COPY package.json package-lock.json* ./
-RUN npm ci
+COPY package.json ./
+RUN npm install
 
 # Rebuild the source code only when needed
 FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-
-# Copy .env file if it exists and source it for build
-COPY .env* ./
-RUN if [ -f .env ]; then export $(cat .env | grep -v '^#' | xargs); fi
 
 # Build Next.js application with environment variables
 ENV NEXT_PUBLIC_SOCKET_URL=${NEXT_PUBLIC_SOCKET_URL}
@@ -47,8 +43,8 @@ RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
 # Copy package.json and install production dependencies
-COPY --from=builder /app/package*.json ./
-RUN npm ci --only=production && npm cache clean --force
+COPY --from=builder /app/package.json ./
+RUN npm install --only=production && npm cache clean --force
 
 # Copy the public folder and Next output
 COPY --from=builder /app/public ./public
