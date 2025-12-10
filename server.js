@@ -35,14 +35,27 @@ class GameRoom {
   constructor(roomId) {
     this.roomId = roomId;
     this.players = [];
-    this.gameState = {
+    this.scoreboard = this.createScoreboard();
+    this.gameState = this.createBaseGameState();
+    this.createdAt = Date.now();
+  }
+
+  createScoreboard() {
+    return {
+      player1: 0,
+      player2: 0,
+    };
+  }
+
+  createBaseGameState() {
+    return {
       player1Board: [],
       player2Board: [],
       currentPlayer: 1,
       calledNumbers: [],
       gameStatus: "waiting",
+      scoreboard: this.scoreboard,
     };
-    this.createdAt = Date.now();
   }
 
   addPlayer(socket) {
@@ -82,14 +95,19 @@ class GameRoom {
 
   initializeGame() {
     this.gameState = {
-      player1Board: [],
-      player2Board: [],
-      currentPlayer: 1,
-      calledNumbers: [],
+      ...this.createBaseGameState(),
       gameStatus: "board-creation",
     };
 
     this.broadcastGameState();
+  }
+
+  incrementScore(winnerNumber) {
+    if (winnerNumber === 1) {
+      this.scoreboard.player1 += 1;
+    } else if (winnerNumber === 2) {
+      this.scoreboard.player2 += 1;
+    }
   }
 
   markNumber(board, number) {
@@ -135,8 +153,10 @@ class GameRoom {
       this.gameState.gameStatus = "tie";
     } else if (player1Wins) {
       this.gameState.gameStatus = "player1-wins";
+      this.incrementScore(1);
     } else if (player2Wins) {
       this.gameState.gameStatus = "player2-wins";
+      this.incrementScore(2);
     } else {
       this.gameState.currentPlayer = this.gameState.currentPlayer === 1 ? 2 : 1;
     }

@@ -17,6 +17,11 @@ export interface Player {
   isConnected: boolean;
 }
 
+export interface Scoreboard {
+  player1: number;
+  player2: number;
+}
+
 export interface GameState {
   player1Board: BingoCell[][];
   player2Board: BingoCell[][];
@@ -25,4 +30,5 @@ export interface GameState {
   gameStatus: GameStatus;
   yourPlayerNumber?: number;
   players?: Player[];
+  scoreboard: Scoreboard;
 }
