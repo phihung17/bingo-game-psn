@@ -6,11 +6,11 @@ import {
   PerspectiveCamera,
   Environment,
   ContactShadows,
+  RoundedBox,
 } from "@react-three/drei";
 import { BingoCell } from "../types/game";
 import { countCompletedLines } from "../utils/gameUtils";
 import BingoKey from "./BingoKey";
-
 interface BingoBoardProps {
   board: BingoCell[][];
   playerName: string;
@@ -67,56 +67,58 @@ export default function BingoBoard3D({
       </div>
 
       {/* 3D Scene Container */}
-      <div className="w-full h-[500px] bg-linear-to-b from-gray-100 to-gray-200 rounded-xl shadow-inner border border-gray-300 relative overflow-hidden">
+      <div className="w-full h-[500px] bg-[#fdf2f8] rounded-xl shadow-inner border border-pink-100 relative overflow-hidden">
         <Canvas shadows>
-          <PerspectiveCamera makeDefault position={[0, 6, 4]} fov={50} />
+          <PerspectiveCamera makeDefault position={[0, 9, 6]} fov={40} />
           <OrbitControls
             enableZoom={false}
-            maxPolarAngle={Math.PI / 2.5}
+            maxPolarAngle={Math.PI / 2.2}
             minPolarAngle={Math.PI / 6}
           />
 
-          <ambientLight intensity={0.5} />
+          <ambientLight intensity={0.9} />
           <directionalLight
-            position={[5, 10, 5]}
-            intensity={1}
+            position={[5, 12, 5]}
+            intensity={0.8}
             castShadow
-            shadow-mapSize={[1024, 1024]}
+            shadow-mapSize={[2048, 2048]}
+            shadow-bias={-0.0001}
           />
-          <Environment preset="city" />
+          <Environment preset="studio" />
 
           <group position={[0, -0.5, 0]}>
-            {/* Base Plate */}
-            <mesh position={[0, -0.3, 0]} receiveShadow>
-              <boxGeometry args={[5.5, 0.2, 5.5]} />
-              <meshStandardMaterial color="#475569" roughness={0.4} />
-            </mesh>
+            {/* Replaced Base Plate with KeyboardCase */}
+            <KeyboardCase />
 
-            {/* Keys */}
-            {board.map((row, i) =>
-              row.map((cell, j) => {
-                const isClickable =
-                  isCurrentPlayer &&
-                  gameStatus === "playing" &&
-                  !calledNumbers.includes(cell.number);
-                const isAlreadyCalled = calledNumbers.includes(cell.number);
+            {/* Keys - Lifted up to sit on the plate */}
+            <group position={[0, 0.6, 0]}>
+              {board.map((row, i) =>
+                row.map((cell, j) => {
+                  const isClickable =
+                    isCurrentPlayer &&
+                    gameStatus === "playing" &&
+                    !calledNumbers.includes(cell.number);
+                  const isAlreadyCalled = calledNumbers.includes(cell.number);
 
-                // Map indices 0..4 to local coordinates -2..2
-                const x = j - 2;
-                const z = i - 2;
+                  // Map indices 0..4 to local coordinates -2..2
+                  const x = j - 2;
+                  const z = i - 2;
 
-                return (
-                  <BingoKey
-                    key={`${i}-${j}`}
-                    cell={cell}
-                    position={[x * 1, 0, z * 1]}
-                    isClickable={isClickable}
-                    isAlreadyCalled={isAlreadyCalled}
-                    onClick={() => isClickable && onNumberClick?.(cell.number)}
-                  />
-                );
-              })
-            )}
+                  return (
+                    <BingoKey
+                      key={`${i}-${j}`}
+                      cell={cell}
+                      position={[x * 1, 0, z * 1]}
+                      isClickable={isClickable}
+                      isAlreadyCalled={isAlreadyCalled}
+                      onClick={() =>
+                        isClickable && onNumberClick?.(cell.number)
+                      }
+                    />
+                  );
+                })
+              )}
+            </group>
           </group>
 
           <ContactShadows
@@ -133,5 +135,32 @@ export default function BingoBoard3D({
         * Kéo để xoay góc nhìn, click để chọn số
       </p>
     </div>
+  );
+}
+
+function KeyboardCase() {
+  return (
+    <group>
+      {/* Main Base - Thick Chunky Wedge Case */}
+      <RoundedBox
+        args={[6.2, 1.2, 6.2]} // Wider bezel relative to 5x5 grid
+        radius={0.4}
+        smoothness={8}
+        position={[0, -0.2, 0]}
+        receiveShadow
+      >
+        <meshStandardMaterial color="#fce7f3" roughness={0.2} metalness={0.0} />
+      </RoundedBox>
+
+      {/* Inner Plate/Slight Recess - Darker pink to creating depth contrast */}
+      <RoundedBox
+        args={[5.4, 0.5, 5.4]}
+        radius={0.1}
+        position={[0, 0.3, 0]} // Sitting slightly above center of thick base, but below keys
+        receiveShadow
+      >
+        <meshStandardMaterial color="#fbcfe8" roughness={0.5} />
+      </RoundedBox>
+    </group>
   );
 }

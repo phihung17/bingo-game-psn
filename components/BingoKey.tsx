@@ -25,22 +25,23 @@ export default function BingoKey({
   const [hovered, setHovered] = useState(false);
   const [pressed, setPressed] = useState(false);
 
-  // Enhanced Color Palette
-  let baseColor = "#f3f4f6"; // Gray-100 (Default)
-  let textColor = "#1f2937"; // Gray-800
+  // Mechanical Keyboard Palette (Soft Pink/White)
+  // Unified Style: All keys are White by default (clean look)
+  let baseColor = "#fda7f3";
+  let textColor = "#831843"; // Pink-900 (High Contrast Dark Pink)
 
   if (cell.isMarked) {
-    baseColor = "#15803d"; // Green-700 (Darker for better contrast)
-    textColor = "#ffffff"; // White text
+    baseColor = "#db2777"; // Pink-600 (Active/Marked) -> Deep Pink
+    textColor = "#831843"; // White text on dark background
   } else if (isAlreadyCalled) {
-    baseColor = "#9ca3af"; // Gray-400
-    textColor = "#7f1d1d"; // Red-900 (Dark Red)
+    baseColor = "#f3f4f6"; // Gray-100 (Subtle gray for called)
+    textColor = "#9ca3af"; // Gray-400 (Dimmed text)
   } else if (isClickable) {
     if (pressed) {
-      baseColor = "#93c5fd"; // Blue-300
+      baseColor = "#fce7f3"; // Pink-100 (Click feedback)
     } else if (hovered) {
-      baseColor = "#bfdbfe"; // Blue-200
-      textColor = "#1e40af"; // Blue-800
+      baseColor = "#fdf2f8"; // Pink-50 (Hover feedback)
+      textColor = "#be185d"; // Pink-700 (Slightly brighter pink on hover)
     }
   }
 
@@ -52,12 +53,12 @@ export default function BingoKey({
       // This inner <group> handles the vertical animation.
 
       const targetY =
-        hovered && isClickable && !pressed ? 0.2 : pressed ? -0.1 : 0;
+        hovered && isClickable && !pressed ? 0.15 : pressed ? -0.1 : 0; // Slightly reduced bounce for cuteness
 
       groupRef.current.position.y = THREE.MathUtils.lerp(
         groupRef.current.position.y,
         targetY,
-        delta * 15 // Snappier animation
+        delta * 20 // Ultra snappy/bouncy
       );
     }
   });
@@ -67,9 +68,9 @@ export default function BingoKey({
       {/* Inner group for animation so text and box move together */}
       <group ref={groupRef}>
         <RoundedBox
-          args={[0.8, 0.4, 0.8]} // Width, Height, Depth
-          radius={0.08} // Slightly more rounded
-          smoothness={4}
+          args={[0.85, 0.4, 0.85]} // Slightly wider/plumper
+          radius={0.15} // Much rounder (Chibi/Marshmallow look)
+          smoothness={8} // Smoother corners
           onPointerOver={() => {
             if (isClickable) {
               setHovered(true);
@@ -90,7 +91,7 @@ export default function BingoKey({
         >
           <meshStandardMaterial
             color={baseColor}
-            roughness={0.3}
+            roughness={0.4} // Matte finish like candy
             metalness={0.1}
           />
         </RoundedBox>
@@ -99,7 +100,7 @@ export default function BingoKey({
         <Text
           position={[0, 0.21, 0]} // Just above the surface (0.2)
           rotation={[-Math.PI / 2, 0, 0]}
-          fontSize={0.35}
+          fontSize={0.4} // Slightly larger, bolder font
           fontWeight="bold" // Make text bolder
           color={textColor}
           anchorX="center"
