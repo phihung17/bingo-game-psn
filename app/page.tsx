@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { io, Socket } from "socket.io-client";
 import { GameState } from "../types/game";
-import BingoBoard from "../components/BingoBoard";
+import BingoBoard3D from "../components/BingoBoard3D";
 import RoomManagement from "../components/RoomManagement";
 import BoardCreation from "../components/BoardCreation";
 import GameStatus from "../components/GameStatus";
@@ -11,7 +11,7 @@ import ConnectionStatus from "../components/ConnectionStatus";
 import RoomInfo from "../components/RoomInfo";
 
 export default function BingoGame() {
-  const [socket, setSocket] = useState<Socket | null>(null);
+  const socketRef = useRef<Socket | null>(null);
   const [gameState, setGameState] = useState<GameState>({
     player1Board: [],
     player2Board: [],
@@ -36,14 +36,15 @@ export default function BingoGame() {
   // Initialize socket connection
   useEffect(() => {
     const socketUrl =
-      (typeof window !== "undefined" && (window as any).__SOCKET_URL__) ||
+      (typeof window !== "undefined" &&
+        (window as Window & { __SOCKET_URL__?: string }).__SOCKET_URL__) ||
       process.env.NEXT_PUBLIC_SOCKET_URL;
 
     const newSocket = io(socketUrl, {
       transports: ["websocket", "polling"],
       timeout: 20000,
     });
-    setSocket(newSocket);
+    socketRef.current = newSocket;
 
     newSocket.on("connect", () => {
       setIsConnected(true);
@@ -89,8 +90,8 @@ export default function BingoGame() {
 
   // Join or create room
   const handleJoinRoom = () => {
-    if (socket) {
-      socket.emit("joinRoom", inputRoomId || undefined);
+    if (socketRef.current) {
+      socketRef.current.emit("joinRoom", inputRoomId || undefined);
       setInputRoomId("");
     }
   };
@@ -102,8 +103,8 @@ export default function BingoGame() {
       return;
     }
 
-    if (socket && roomId) {
-      socket.emit("callNumber", { number, roomId });
+    if (socketRef.current && roomId) {
+      socketRef.current.emit("callNumber", { number, roomId });
     }
   };
 
@@ -140,9 +141,9 @@ export default function BingoGame() {
       }
     }
 
-    if (socket && roomId) {
+    if (socketRef.current && roomId) {
       setIsSubmittingBoard(true);
-      socket.emit("submitBoard", { boardNumbers: numbers, roomId });
+      socketRef.current.emit("submitBoard", { boardNumbers: numbers, roomId });
     }
   };
 
@@ -161,8 +162,8 @@ export default function BingoGame() {
 
   // Restart game
   const handleRestartGame = () => {
-    if (socket && roomId) {
-      socket.emit("restartGame", roomId);
+    if (socketRef.current && roomId) {
+      socketRef.current.emit("restartGame", roomId);
       setBoardInput(Array(25).fill(""));
       setIsSubmittingBoard(false);
     }
@@ -276,7 +277,7 @@ export default function BingoGame() {
             {/* Your Board Only */}
             <div className="flex justify-center">
               {playerNumber === 1 && (
-                <BingoBoard
+                <BingoBoard3D
                   board={gameState.player1Board}
                   playerName="Bảng của bạn (Người chơi 1)"
                   isCurrentPlayer={gameState.currentPlayer === 1}
@@ -286,7 +287,7 @@ export default function BingoGame() {
                 />
               )}
               {playerNumber === 2 && (
-                <BingoBoard
+                <BingoBoard3D
                   board={gameState.player2Board}
                   playerName="Bảng của bạn (Người chơi 2)"
                   isCurrentPlayer={gameState.currentPlayer === 2}
