@@ -9,6 +9,7 @@ import BoardCreation from "../components/BoardCreation";
 import GameStatus from "../components/GameStatus";
 import ConnectionStatus from "../components/ConnectionStatus";
 import RoomInfo from "../components/RoomInfo";
+import { Scoreboard } from "../components/Scoreboard";
 
 export default function BingoGame() {
   const [socket, setSocket] = useState<Socket | null>(null);
@@ -18,6 +19,7 @@ export default function BingoGame() {
     currentPlayer: 1,
     calledNumbers: [],
     gameStatus: "waiting",
+    scoreboard: { player1: 0, player2: 0 },
   });
   const [roomId, setRoomId] = useState("");
   const [inputRoomId, setInputRoomId] = useState("");
@@ -194,6 +196,16 @@ export default function BingoGame() {
             playerNumber={playerNumber}
             gameState={gameState}
           />
+        )}
+
+        {/* Scoreboard */}
+        {roomId && (
+          <div className="mb-6">
+            <Scoreboard
+              scoreboard={gameState.scoreboard}
+              playerNumber={playerNumber}
+            />
+          </div>
         )}
 
         {/* Waiting for players */}
