@@ -38,6 +38,7 @@ class GameRoom {
     this.scoreboard = this.createScoreboard();
     this.gameState = this.createBaseGameState();
     this.createdAt = Date.now();
+    this.lastWinner = null;
   }
 
   createScoreboard() {
@@ -48,13 +49,19 @@ class GameRoom {
   }
 
   createBaseGameState() {
+    let startingPlayer = 1;
+    if (this.lastWinner !== null) {
+      startingPlayer = this.lastWinner === 1 ? 2 : 1;
+    }
+
     return {
       player1Board: [],
       player2Board: [],
-      currentPlayer: 1,
+      currentPlayer: startingPlayer,
       calledNumbers: [],
       gameStatus: "waiting",
       scoreboard: this.scoreboard,
+      lastWinner: this.lastWinner,
     };
   }
 
@@ -108,6 +115,7 @@ class GameRoom {
     } else if (winnerNumber === 2) {
       this.scoreboard.player2 += 1;
     }
+    this.lastWinner = winnerNumber;
   }
 
   markNumber(board, number) {
@@ -151,6 +159,7 @@ class GameRoom {
 
     if (player1Wins && player2Wins) {
       this.gameState.gameStatus = "tie";
+      // Trong trường hợp hòa, giữ nguyên lastWinner để người đi trước không đổi
     } else if (player1Wins) {
       this.gameState.gameStatus = "player1-wins";
       this.incrementScore(1);

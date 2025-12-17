@@ -20,6 +20,7 @@ export default function BingoGame() {
     calledNumbers: [],
     gameStatus: "waiting",
     scoreboard: { player1: 0, player2: 0 },
+    lastWinner: null,
   });
   const [roomId, setRoomId] = useState("");
   const [inputRoomId, setInputRoomId] = useState("");

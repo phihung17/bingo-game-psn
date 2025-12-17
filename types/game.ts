@@ -31,4 +31,5 @@ export interface GameState {
   yourPlayerNumber?: number;
   players?: Player[];
   scoreboard: Scoreboard;
+  lastWinner?: 1 | 2 | null;
 }
