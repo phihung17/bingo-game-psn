@@ -49,7 +49,7 @@ jobs:
           script: |
             echo "Starting deploy"
 
-            cd /opt/web/bingo-game/
+            cd web/bingo-game/
 
             echo "Stopping current services..."
             docker compose -f docker-compose.yml down
