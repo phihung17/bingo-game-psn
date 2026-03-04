@@ -2,11 +2,7 @@ services:
   bingo-game:
     image: dinhoangphihung17/bingo-game:latest
     ports:
-      - "5000:5000"
-    env_file:
-      - .env
-    environment:
-      - SOCKET_URL=http://206.189.89.131:5000
+      - "127.0.0.1:5000:5000"
     restart: unless-stopped
     healthcheck:
       test:
@@ -16,7 +12,7 @@ services:
           "--no-verbose",
           "--tries=1",
           "--spider",
-          "http://206.189.89.131:5000/api/health",
+          "http://localhost:5000/api/health",
         ]
       interval: 30s
       timeout: 10s
